@@ -233,6 +233,16 @@ export default {
   BROWSE: "浏览",
   CREATOR: "创建者",
 
+  // banners
+  TITLE_PRIMARY: "简洁，高效",
+  TITLE_SECONDARY: "随时随地管理任务",
+  BANNER1_TITLE: "监控进度",
+  BANNER1_DESCRIPTION: "添加时间线和优先级，更加直观的显示任务进度。",
+  BANNER3_TITLE: "即时通讯",
+  BANNER3_DESCRIPTION: "组员之间发送消息，更方便的得到他们的任务完成状态。",
+  BANNER2_TITLE: "添加任务",
+  BANNER2_DESCRIPTION: "为项目添加不同分组，更好的归纳整理不同任务组。",
+
   // errors
   SMS_ERROR: "暂时无法获得验证码信息",
   SMS_NOT_MATCH: "验证码信息有误，请重新发送",

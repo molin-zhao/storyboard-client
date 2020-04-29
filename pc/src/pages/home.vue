@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="home-wrapper">
     <storyboardHeader :mobile="mobile"></storyboardHeader>
     <storyboardContent></storyboardContent>
     <storyboardFooter></storyboardFooter>
@@ -24,4 +24,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.home-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+</style>

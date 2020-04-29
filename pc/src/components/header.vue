@@ -1,14 +1,17 @@
 <template>
   <div class="header">
     <div class="header-nav display-only">
-      <a class="navbar-brand nav-title" style="margin-left: 10px">
+      <a
+        class="navbar-brand nav-title"
+        style="margin-left: 10px; font-weight: bold"
+      >
         <img
           src="/static/logo.png"
           width="30"
           height="30"
           class="d-inline-block align-top"
         />
-        Storyboard
+        cokework
       </a>
       <div v-if="id && token" class="avatar-wrapper ml-auto">
         <span class="avatar-label">{{ $t("WELCOME") }}</span>
@@ -18,8 +21,8 @@
           style="width: 40px; height: 40px; border-radius: 20px"
         />
       </div>
-      <div v-else class="ml-auto">
-        <div class="navbar-nav header-items">
+      <div v-else class="ml-auto" style="height: 100%">
+        <div class="navbar-nav header-items" style="height: 100%">
           <div>
             <icon
               :name="computedLocaleIcon"
@@ -60,11 +63,7 @@
               >{{ $t("REGISTER") }}</router-link
             >
           </div>
-          <div v-show="!isMobile">
-            <div
-              style="width: 2px; height: 90%; background-color: whitesmoke; border-radius: 1px"
-            />
-          </div>
+          <div v-show="!isMobile" class="header-seperator"></div>
           <div
             v-show="!isMobile"
             :class="`header-item ${computedActiveLink('login')}`"
@@ -135,9 +134,11 @@ export default {
   top: 0;
   left: 0;
   height: 5vh;
+  min-height: 60px;
   width: 100%;
   min-width: 1024px;
   background-color: #090723;
+  z-index: 1;
   .header-nav {
     height: 100%;
     width: 100%;
@@ -165,6 +166,12 @@ export default {
       margin-left: 5px;
       margin-right: 5px;
     }
+  }
+  .header-seperator {
+    width: 2px;
+    height: 40%;
+    background-color: gainsboro;
+    border-radius: 1px;
   }
   .nav-title {
     color: whitesmoke;

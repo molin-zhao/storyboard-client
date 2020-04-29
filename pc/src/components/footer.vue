@@ -18,14 +18,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../common/theme/container.css";
 .footer {
   width: 100%;
   height: 5vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #dcdcdc80;
+  background-color: whitesmoke;
   span {
     display: inline-block;
     vertical-align: middle;

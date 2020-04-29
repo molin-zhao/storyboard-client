@@ -233,6 +233,21 @@ export default {
   CREATE_PHASE: "Create new phase",
   CREATOR: "creator",
 
+  // banners
+  TITLE_PRIMARY: "Simple and efficient",
+  TITLE_SECONDARY: "Manage projects anytime, anywhere",
+  BANNER1_TITLE: "Monitor progress",
+  BANNER1_DESCRIPTION:
+    "Add timelines and priorities to tasks to easily master task and project progress.",
+  BANNER3_TITLE: "Instant messaging",
+  BANNER3_DESCRIPTION:
+    "Contact the project team members in time to get their latest task information.",
+  BANNER2_TITLE: "Append tasks",
+  BANNER2_DESCRIPTION:
+    "Add different groups to the project to better summarize the tasks.",
+  // BANNER4_TITLE: '',
+  // BANNER4_DESCRIPTION: '',
+
   // errors
   SMS_ERROR: "Cannot temporarily get the SMS code.",
   SMS_NOT_MATCH: "SMS code not match, please resend a code.",
