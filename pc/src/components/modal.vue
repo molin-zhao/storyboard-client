@@ -1,14 +1,9 @@
 <template>
   <transition name="fade">
-    <div
-      v-show="visible"
-      class="modal-wrapper"
-      role="dialog"
-      @click.stop="hide"
-    >
+    <div v-if="visible" class="modal-wrapper" role="dialog" @click.stop="hide">
       <transition name="top-in">
         <div
-          v-show="visible"
+          v-if="visible"
           class="modal-dialog modal-dialog-centered my-modal"
           role="document"
           @click.stop="stopPropagation"

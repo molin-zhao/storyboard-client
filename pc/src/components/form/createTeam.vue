@@ -50,7 +50,7 @@
                   style="height: 100%; width: 100%; border-radius: 10px"
                   :url="computedSearchUrl"
                   :data-source="searchResult"
-                  :limit="5"
+                  :limit="searchLimit"
                   @on-error="onSearchError"
                   @on-result="onSearchResult"
                   @input-change="searchInputChange"
@@ -72,9 +72,10 @@
                       />
                     </div>
                   </vue-scroll>
-                  <span v-else style="margin-top: 10px">{{
+                  <span v-else-if="searchValue" style="margin-top: 10px">{{
                     $t("NO_USER_FOUND")
                   }}</span>
+                  <div v-else></div>
                 </div>
               </div>
               <div class="selected-display" v-show="members.length > 0">
@@ -84,7 +85,7 @@
                     v-for="item in members"
                     :key="item._id"
                     :item="item"
-                    @click.native.stop="removeUser(item)"
+                    @on-remove="removeUser"
                   />
                 </div>
               </div>

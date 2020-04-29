@@ -71,6 +71,14 @@ export const PUT_EDIT_TASK_MEMBER = () => {
   return API_HOST + "/project/task/member/edit";
 };
 
+export const PUT_EDIT_TEAM_MEMBER = () => {
+  return API_HOST + "/team/member";
+};
+
+export const PUT_LEAVE_TEAM = () => {
+  return API_HOST + "/team/leave";
+};
+
 export const POST_SAVE_PROJECT_LOG = () => {
   return API_HOST + "/project/save";
 };
@@ -121,6 +129,10 @@ export const DELETE_PHASE = (projectId, phaseId) => {
 
 export const DELETE_PROJECT = projectId => {
   return API_HOST + `/project/delete?id=${projectId}`;
+};
+
+export const DELETE_TEAM = teamId => {
+  return API_HOST + `/team/delete?id=${teamId}`;
 };
 
 export const GET_USER_AVATAR = userId => {

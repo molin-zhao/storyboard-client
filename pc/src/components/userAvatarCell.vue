@@ -1,5 +1,9 @@
 <template>
-  <div class="selected-user" v-tooltip:right="computedTooltipTitle">
+  <div
+    class="selected-user"
+    v-tooltip:right="computedTooltipTitle"
+    @click="cellClicked"
+  >
     <avatar
       style="width: 50px; height: 50px; border-radius: 5px; object-fit: cover"
       :src="item.avatar"
@@ -29,6 +33,13 @@ export default {
     computedTooltipTitle() {
       const { item } = this;
       return sliceFromLeft(item.username, 10);
+    }
+  },
+  methods: {
+    cellClicked() {
+      const { canRemove } = this;
+      if (canRemove) this.$emit("on-remove", item);
+      return;
     }
   }
 };

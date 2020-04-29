@@ -10,6 +10,17 @@ const mutations = {
   },
   reload_teams(state, payload) {
     state.teams = payload;
+  },
+  edit_team_members(state, payload) {
+    const { teamId, members } = payload;
+    for (let team of state.teams) {
+      if (team["_id"] === teamId) {
+        team["members"] = members;
+      }
+    }
+  },
+  delete_team(state, payload) {
+    state.teams = state.teams.filter(team => team["_id"] !== payload);
   }
 };
 

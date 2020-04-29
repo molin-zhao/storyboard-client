@@ -28,6 +28,5 @@ export default {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
-  cursor: pointer;
 }
 </style>
