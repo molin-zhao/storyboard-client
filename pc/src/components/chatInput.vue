@@ -45,6 +45,8 @@ export default {
       const { message } = this;
       let trimmedMsg = message.trim();
       this.$emit("send-message", trimmedMsg);
+    },
+    resetMessage() {
       this.message = "";
     }
   },

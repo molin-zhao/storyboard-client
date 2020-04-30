@@ -132,9 +132,14 @@ const markAsRead = (state, id) => {
   if (!msgFrom) return state.messages;
   let msgs = msgFrom["messages"];
   if (!msgs || msgs.length === 0) return state.messages;
-  for (let msg in msgs) {
-    if (!msg["read"]) msg["read"] = true;
+  let changed = false;
+  for (let msg of msgs) {
+    if (!msg["read"]) {
+      msg["read"] = true;
+      if (!changed) changed = true;
+    }
   }
+  if (!changed) return state.messages;
   return Object.assign({}, state.messages);
 };
 

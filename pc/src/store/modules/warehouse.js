@@ -10,6 +10,9 @@ const mutations = {
   },
   reload_warehouse(state, payload) {
     state.warehouse = payload;
+  },
+  reset_warehouse(state) {
+    state.warehouse = [];
   }
 };
 

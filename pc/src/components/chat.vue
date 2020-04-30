@@ -40,7 +40,7 @@
           />
         </vue-scroll>
         <div class="chat-input">
-          <chat-input @send-message="sendMessage" />
+          <chat-input ref="chat-input" @send-message="sendMessage" />
         </div>
       </div>
     </div>
@@ -151,6 +151,8 @@ export default {
           message: this.$t("SEND_MESSAGE_ERROR"),
           interval: 5000
         });
+      const chatInputEl = this.$refs["chat-input"];
+      if (chatInputEl && chatInputEl.resetMessage) chatInputEl.resetMessage();
       const data = createMessage(
         "chat",
         val,
@@ -172,12 +174,22 @@ export default {
     messages: {
       deep: true,
       handler: function(newValue, oldValue) {
-        console.log("message changed");
-        const { to } = this;
-        if (!to || !to["_id"]) return;
-        this.mark_read(to["_id"]);
-        this.save_message();
+        let newJson = JSON.stringify(newValue);
+        let oldJson = JSON.stringify(oldValue);
+        if (newJson !== oldJson) {
+          console.log("message changed");
+          const { to } = this;
+          if (!to || !to["_id"]) return;
+          this.mark_read(to["_id"]);
+          this.save_message();
+        }
       }
+    },
+    to(newVal, oldVal) {
+      if (!newVal) return;
+      if (!newVal["_id"]) return;
+      this.mark_read(newVal["_id"]);
+      this.save_message();
     }
   }
 };

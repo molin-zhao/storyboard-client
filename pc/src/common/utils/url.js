@@ -23,12 +23,20 @@ export const POST_DFS_UPLOAD = () => {
   return DFS_HOST + "/dfs/upload";
 };
 
+export const POST_DFS_UPLOAD_AVATAR = () => {
+  return DFS_HOST + "/dfs/upload/avatar";
+};
+
 export const POST_FILE_UPLOAD = () => {
   return COMPUTE_HOST + "/file/upload";
 };
 
 export const DELETE_DFS_DELETE = id => {
   return DFS_HOST + `/dfs/delete?id=${id}`;
+};
+
+export const POST_DFS_DELETE_AVATAR = () => {
+  return DFS_HOST + "/dfs/delete/avatar";
 };
 
 export const POST_UPLOAD_USER_PROFILE = () => {
@@ -97,6 +105,10 @@ export const GET_VERIFY_TOKEN = token => {
 
 export const GET_LOGOUT = id => {
   return PASSPORT_HOST + `/user/logout?user=${id}`;
+};
+
+export const POST_LOGOUT = () => {
+  return PASSPORT_HOST + "/user/logout";
 };
 
 export const CONNECT_SOCKET = () => {

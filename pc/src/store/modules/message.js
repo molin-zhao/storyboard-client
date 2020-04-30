@@ -13,18 +13,16 @@ const state = {
 const getters = {};
 const actions = {
   restore_message: ({ commit }) => {
-    try {
-      let storageMessage = localStorage.getItem("message");
-      if (storageMessage) {
-        commit("init_message", JSON.parse(storageMessage));
-      } else {
-        commit("init_message", {
-          messages: {},
-          pendingMessages: [],
-          failedMessages: []
-        });
-      }
-    } catch (err) {}
+    let storageMessage = localStorage.getItem("message");
+    if (storageMessage) {
+      commit("init_message", JSON.parse(storageMessage));
+    } else {
+      commit("init_message", {
+        messages: {},
+        pendingMessages: [],
+        failedMessages: []
+      });
+    }
   }
 };
 const mutations = {
@@ -51,6 +49,12 @@ const mutations = {
   },
   save_message(state) {
     localStorage.setItem("message", JSON.stringify(state));
+  },
+  reset_message(state) {
+    localStorage.removeItem("message");
+    state.messages = {};
+    state.pendingMessages = [];
+    state.failedMessages = [];
   },
   init_message(state, payload) {
     state.messages = payload.messages;

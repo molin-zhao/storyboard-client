@@ -19,8 +19,11 @@ const mutations = {
       }
     }
   },
-  delete_team(state, payload) {
+  remove_team(state, payload) {
     state.teams = state.teams.filter(team => team["_id"] !== payload);
+  },
+  reset_team(state) {
+    state.teams = [];
   }
 };
 

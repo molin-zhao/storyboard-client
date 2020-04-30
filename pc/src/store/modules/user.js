@@ -67,6 +67,16 @@ const mutations = {
   },
   remove_socket(state) {
     state.socket = null;
+  },
+  reset_user(state) {
+    state.id = null;
+    state.token = null;
+    state.socket = null;
+    state.avatar = "";
+    state.username = "";
+    state.gender = "m";
+    state.email = "";
+    state.phone = "";
   }
 };
 

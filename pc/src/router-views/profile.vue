@@ -10,7 +10,7 @@
         <div class="profile-wrapper">
           <div class="avatar" v-if="uploading">
             <span
-              class="spinner-border spinner-border-sm text-info"
+              class="spinner-border spinner-border-md text-info"
               role="status"
               aria-hidden="true"
             ></span>
@@ -255,6 +255,16 @@ export default {
       return this.username;
     }
   },
+  async beforeDestroy() {
+    const { uploadedAvatar } = this;
+    if (uploadedAvatar) {
+      try {
+        const url = URL.DELETE_DFS_DELETE(uploadedAvatar);
+        const resp = await this.$http.delete(url);
+        console.log(resp);
+      } catch (err) {}
+    }
+  },
   methods: {
     mouseover,
     mouseleave,
@@ -312,10 +322,10 @@ export default {
           let formData = new FormData();
           formData.append("file", compressedFile);
           let url = URL.POST_DFS_UPLOAD();
-          const uploadRes = await this.$http.post(url, formData, {
+          const res = await this.$http.post(url, formData, {
             headers: { "Content-Type": "multipart/form-data" }
           });
-          this.uploadedAvatar = uploadRes.data.data;
+          this.uploadedAvatar = res.data.data;
           fileDOM.value = null;
         } catch (err) {
           console.log(err);

@@ -234,6 +234,22 @@
         </div>
       </div>
     </div>
+    <div
+      v-show="loggingout"
+      class="modal-wrapper display-only"
+      @click.stop="stopPropagation"
+    >
+      <div class="my-alert">
+        <h5>{{ $t("LOGGING_OUT") }}</h5>
+        <span
+          class="spinner-border spinner-border-md"
+          role="status"
+          style="color: lightgrey"
+          aria-hidden="true"
+        ></span>
+        <span></span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -254,7 +270,12 @@ import * as URL from "@/common/utils/url";
 import { eventBus } from "@/common/utils/eventBus";
 import { bell, user, ops } from "@/common/theme/style";
 import { mapState, mapMutations, mapActions } from "vuex";
-import { mouseover, mouseleave, mouseclick } from "@/common/utils/mouse";
+import {
+  mouseover,
+  mouseleave,
+  mouseclick,
+  stopPropagation
+} from "@/common/utils/mouse";
 import { parser } from "@/common/utils/array";
 import {
   createSocketConnection,
@@ -283,6 +304,7 @@ export default {
       storyboardLoading: false,
       reloading: false,
       socketConnecting: false,
+      loggingout: false,
       visibleView: "mainboard",
       viewNames: ["mainboard", "settings", "profile", "warehouse", "team"],
       bell,
@@ -373,12 +395,18 @@ export default {
       update_global_members: "project/update_global_members",
       update_global_member_status: "project/update_global_member_status",
       push_messages: "message/push_messages",
-      save_message: "message/save_message"
+      save_message: "message/save_message",
+      reset_message: "message/delete_message",
+      reset_project: "project/delete_project",
+      reset_team: "team/delete_team",
+      reset_warehouse: "warehouse/reset_warehouse",
+      reset_user: "user/reset_user"
     }),
     mouseover,
     mouseleave,
     mouseclick,
     isEdited,
+    stopPropagation,
     projectLabelClick(index) {
       this.select_index(index);
       this.goTo("mainboard");
@@ -542,16 +570,28 @@ export default {
         message: this.$t("LOGOUT_MESSAGE"),
         success: async () => {
           try {
-            let url = URL.GET_LOGOUT(this.id);
-            this.storyboardLoading = true;
-            const logout = await this.$http.get(url);
+            const { id, messages, socket } = this;
+            this.loggingout = true;
+            const url = URL.POST_LOGOUT();
+            let body = {
+              messages: JSON.stringify(messages),
+              user: id
+            };
+            await this.$http.post(url, body);
+            if (socket && socket.connected) socket.close();
+            this.remove_socket();
             this.remove_credential();
             this.remove_userinfo();
-            this.storyboardLoading = false;
+            this.reset_user();
+            this.reset_message();
+            this.reset_project();
+            this.reset_team();
+            this.reset_warehouse();
             this.$router.replace("/");
           } catch (err) {
             console.log(err);
-            this.storyboardLoading = false;
+          } finally {
+            this.loggingout = false;
           }
         },
         confirmLabel: this.$t("CONFIRM"),

@@ -96,6 +96,16 @@ const mutations = {
   update_global_member_status(state, payload) {
     const { user, status } = payload;
     state.globalProjectMembers = updateGlobalMemberStatus(state, user, status);
+  },
+  reset_project(state) {
+    state.projects = [];
+    state.activeIndex = 0;
+    state.logs = {};
+    state.taskLookup = {};
+    state.groupLookup = {};
+    state.phaseLookup = {};
+    state.projectLookup = {};
+    state.globalProjectMembers = {};
   }
 };
 

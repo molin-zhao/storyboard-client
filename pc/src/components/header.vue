@@ -1,7 +1,8 @@
 <template>
-  <div class="header">
+  <div class="header-wrapper">
     <div class="header-nav display-only">
-      <a
+      <router-link
+        to="/"
         class="navbar-brand nav-title"
         style="margin-left: 10px; font-weight: bold"
       >
@@ -12,13 +13,14 @@
           class="d-inline-block align-top"
         />
         cokework
-      </a>
+      </router-link>
       <div v-if="id && token" class="avatar-wrapper ml-auto">
         <span class="avatar-label">{{ $t("WELCOME") }}</span>
         <span class="avatar-label">{{ username }}</span>
         <avatar
+          @click.native="goToStoryboard"
           :src="avatar"
-          style="width: 40px; height: 40px; border-radius: 20px"
+          style="width: 40px; height: 40px; border-radius: 20px; cursor: pointer"
         />
       </div>
       <div v-else class="ml-auto" style="height: 100%">
@@ -31,7 +33,7 @@
           </div>
           <div class="header-item dropdown">
             <a
-              class="nav-link nav-link-custom dropdown-toggle nav-title"
+              class="nav-link-custom dropdown-toggle nav-title"
               id="navbarDropdownMenuLink"
               data-toggle="dropdown"
               aria-haspopup="true"
@@ -57,22 +59,18 @@
             v-show="!isMobile"
             :class="`header-item ${computedActiveLink('register')}`"
           >
-            <router-link
-              class="nav-link nav-link-custom nav-title"
-              to="/register"
-              >{{ $t("REGISTER") }}</router-link
-            >
+            <router-link class="nav-link-custom nav-title" to="/register">{{
+              $t("REGISTER")
+            }}</router-link>
           </div>
           <div v-show="!isMobile" class="header-seperator"></div>
           <div
             v-show="!isMobile"
             :class="`header-item ${computedActiveLink('login')}`"
           >
-            <router-link
-              class="nav-link nav-link-custom nav-title"
-              to="/login"
-              >{{ $t("LOGIN") }}</router-link
-            >
+            <router-link class="nav-link-custom nav-title" to="/login">{{
+              $t("LOGIN")
+            }}</router-link>
           </div>
         </div>
       </div>
@@ -118,6 +116,9 @@ export default {
       if (this.$i18n.locale === localeId) {
         return "✓";
       }
+    },
+    goToStoryboard() {
+      this.$router.replace("/storyboard");
     }
   },
   watch: {
@@ -129,7 +130,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.header {
+.header-wrapper {
   position: absolute;
   top: 0;
   left: 0;
@@ -157,7 +158,7 @@ export default {
     .header-item {
       border: none;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       max-width: 100px;
@@ -169,7 +170,7 @@ export default {
   }
   .header-seperator {
     width: 2px;
-    height: 40%;
+    height: 50%;
     background-color: gainsboro;
     border-radius: 1px;
   }

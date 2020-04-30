@@ -8,6 +8,7 @@ import project from "./modules/project";
 import team from "./modules/team";
 import message from "./modules/message";
 import warehouse from "./modules/warehouse";
+import app from "./modules/app";
 
 const store = new vuex.Store({
   modules: {
@@ -15,7 +16,8 @@ const store = new vuex.Store({
     project,
     team,
     message,
-    warehouse
+    warehouse,
+    app
   }
 });
 

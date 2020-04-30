@@ -214,7 +214,7 @@ export default {
   methods: {
     ...mapMutations({
       edit_team_members: "team/edit_team_members",
-      delete_team: "team/delete_team"
+      remove_team: "team/remove_team"
     }),
     onSearchError(err) {
       console.log(err);
@@ -252,7 +252,7 @@ export default {
             let url = URL.DELETE_TEAM(teamId);
             this.deleting = true;
             const resp = await this.$http.delete(url);
-            if (resp.data.data === "ok") this.delete_team(teamId);
+            if (resp.data.data === "ok") this.remove_team(teamId);
           } catch (err) {
           } finally {
             this.deleting = false;
@@ -300,7 +300,7 @@ export default {
             let url = URL.PUT_LEAVE_TEAM();
             this.leaving = true;
             const resp = await this.$http.put(url, { teamId, userId: id });
-            if (resp.data.data === "ok") this.delete_team(teamId);
+            if (resp.data.data === "ok") this.remove_team(teamId);
           } catch (err) {
           } finally {
             this.leaving = false;

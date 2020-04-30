@@ -72,12 +72,12 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some(r => r.path === "/storyboard")) {
     if (!isLogin()) return next({ name: "login" });
     try {
+      store.commit("app/set_loading", true);
       let url = URL.GET_VERIFY_TOKEN(store.state.user.token);
       const res = await Vue.http.get(url);
       if (res.status === 201) {
         // token valid but renewed, update local and vuex store
         store.dispatch("user/save_credential", res.data.data);
-        console.log(store.state.user.token);
         return next();
       }
       return next();
@@ -88,6 +88,8 @@ router.beforeEach(async (to, from, next) => {
       } else {
         return next();
       }
+    } finally {
+      store.commit("app/set_loading", false);
     }
   }
   return next();

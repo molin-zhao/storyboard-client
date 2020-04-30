@@ -1,11 +1,28 @@
 <template>
-  <div class="wrapper">
-    <icon class="empty" name="useravatarempty" :style="computedIconStyle" />
-    <img
-      v-show="computedImageSource && show"
-      @error="defaultImage()"
-      :src="computedImageSource"
+  <div class="avatar-wrapper">
+    <icon
+      v-if="!computedImageSource || !show"
+      class="empty"
+      name="useravatarempty"
+      :style="computedIconStyle"
     />
+    <div class="avatar-image" v-else>
+      <transition>
+        <img
+          v-show="isLoad"
+          @load="loaded"
+          @error="defaultImage()"
+          :src="computedImageSource"
+        />
+      </transition>
+      <span
+        v-show="!isLoad"
+        class="spinner-border spinner-border-md"
+        role="status"
+        :style="`color: ${loadingColor}`"
+        aria-hidden="true"
+      ></span>
+    </div>
   </div>
 </template>
 
@@ -17,13 +34,18 @@ export default {
     return {
       lookup: false,
       lookupSrc: "",
-      show: true
+      show: true,
+      isLoad: false
     };
   },
   props: {
     defaultImg: {
       type: String,
       default: "/static/image/user_empty.png"
+    },
+    loadingColor: {
+      type: String,
+      default: "gainsboro"
     },
     src: {
       type: String
@@ -52,6 +74,10 @@ export default {
     computedIconStyle() {
       const { iconColor, iconStyle } = this;
       return `color: ${iconColor}; ${iconStyle}`;
+    },
+    computedImageLoading() {
+      const { loading, show, computedImageSource } = this;
+      return computedImageSource && show && loading;
     }
   },
   methods: {
@@ -62,42 +88,62 @@ export default {
         img.onerror = null;
         return;
       }
-      if (!lookup && userId) {
-        try {
-          let url = URL.GET_USER_AVATAR(userId);
-          const resp = await this.$http.get(url);
-          this.lookup = true;
-          this.lookupSrc = resp.data.data;
-        } catch (err) {
-          console.log(err);
-          this.show = false;
-        } finally {
-          img.onerror = null;
-        }
-      } else {
+      if (lookup) {
         this.show = false;
         img.onerror = null;
+        return;
       }
+      try {
+        let url = URL.GET_USER_AVATAR(userId);
+        const resp = await this.$http.get(url);
+        this.lookupSrc = resp.data.data;
+      } catch (err) {
+        this.show = false;
+      } finally {
+        this.lookup = true;
+        img.onerror = null;
+      }
+    },
+    loaded() {
+      this.isLoad = true;
+    }
+  },
+  watch: {
+    src(newVal, oldVal) {
+      if (newVal) this.isLoad = false;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
+.avatar-wrapper {
   position: relative;
-  img {
-    position: absolute;
-    object-fit: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .avatar-image {
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    position: absolute;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
   }
 }
 
 .empty {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
 }
 </style>

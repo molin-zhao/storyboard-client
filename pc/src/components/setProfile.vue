@@ -41,7 +41,7 @@
       <label>{{ $t("AVATAR") }}</label>
       <div class="avatar" v-if="uploading">
         <span
-          class="spinner-border spinner-border-sm text-info"
+          class="spinner-border spinner-border-md text-info"
           role="status"
           aria-hidden="true"
         ></span>
@@ -260,8 +260,22 @@ export default {
       if (item === this.computedAvatar) return;
       this.selectedAvatar = item;
     },
-    skip() {
-      this.$router.replace("/storyboard");
+    async skip() {
+      const { uploadedAvatar } = this;
+      if (uploadedAvatar) {
+        try {
+          this.processing = true;
+          const url = URL.DELETE_DFS_DELETE(uploadedAvatar);
+          const resp = await this.$http.delete(url);
+          console.log(resp);
+        } catch (err) {
+        } finally {
+          this.processing = false;
+          this.$router.replace("/storyboard");
+        }
+      } else {
+        this.$router.replace("/storyboard");
+      }
     },
     async finish() {
       try {

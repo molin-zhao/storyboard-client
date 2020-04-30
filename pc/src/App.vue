@@ -1,5 +1,11 @@
 <template>
   <div id="app">
+    <loading
+      v-if="appLoading"
+      :active="true"
+      spinner="line-wave"
+      color="#090723"
+    />
     <router-view></router-view>
   </div>
 </template>
@@ -23,7 +29,8 @@ export default {
       return this.$router.replace("/mobile");
   },
   computed: {
-    ...mapState("user", ["id", "token", "avatar", "username", "gender"])
+    ...mapState("user", ["id", "token", "avatar", "username", "gender"]),
+    ...mapState("app", ["appLoading"])
   },
   methods: {
     ...mapMutations({
