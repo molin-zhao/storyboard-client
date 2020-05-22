@@ -14,7 +14,8 @@ const createSocketConnection = (options = {}) => {
       reconnection: true,
       reconnectionDelay: 1000 * 60 * 5, // 5 minutes
       reconnectionAttempts: 3,
-      reconnectionDelayMax: 1000 * 60 * 10
+      reconnectionDelayMax: 1000 * 60 * 10,
+      query: options["auth"]
     });
     socket.on("connect", () => {
       console.log("connecting to server");
@@ -24,9 +25,9 @@ const createSocketConnection = (options = {}) => {
       store.commit("user/remove_socket");
       console.log("disconnected");
     });
-    socket.on("receive-message", (message, callback) => {
-      let receiveMessageCallback = options["receiveMessage"];
-      if (receiveMessageCallback) receiveMessageCallback(message);
+    socket.on("chat", (message, callback) => {
+      let chatCallback = options["chat"];
+      if (chatCallback) chatCallback(message);
       callback(true);
     });
     socket.on("online", msg => {
@@ -38,6 +39,10 @@ const createSocketConnection = (options = {}) => {
       let user = msg["data"];
       let offlineCallback = options["offline"];
       if (offlineCallback) offlineCallback(user);
+    });
+    socket.on("login-attempt", msg => {
+      const loginAttemptCallback = options["loginAttempt"];
+      if (loginAttemptCallback) loginAttemptCallback(msg);
     });
     return socket;
   } catch (err) {

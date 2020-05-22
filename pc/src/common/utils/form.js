@@ -49,7 +49,10 @@ const isPassword = function(value, errorMsg) {
 };
 
 const encrypt = (val, secret) => {
-  let s = cryptoJS.enc.Utf8.parse(secret);
+  const secretStr = secret.toString();
+  const secretLen = secretStr.length;
+  if (secretLen < 8) throw new Error("secret length at least 8");
+  let s = cryptoJS.enc.Utf8.parse(secretStr);
   let v = cryptoJS.enc.Utf8.parse(val);
   let encrypted = cryptoJS.AES.encrypt(v, s, {
     mode: cryptoJS.mode.ECB,
@@ -59,7 +62,10 @@ const encrypt = (val, secret) => {
 };
 
 const decrypt = (val, secret) => {
-  let s = cryptoJS.enc.Utf8.parse(secret);
+  const secretStr = secret.toString();
+  const secretLen = secretStr.length;
+  if (secretLen < 8) throw new Error("secret length at least 8");
+  let s = cryptoJS.enc.Utf8.parse(secretStr);
   let decrypted = cryptoJS.AES.decrypt(val, s, {
     mode: cryptoJS.mode.ECB,
     padding: cryptoJS.pad.Pkcs7

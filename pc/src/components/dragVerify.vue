@@ -149,7 +149,7 @@ export default {
     user-select: none;
     color: #333;
     @include jc-flex;
-    height: 45px; /*no*/
+    height: 40px; /*no*/
     &.success {
       background-color: #7ac23c;
       color: #fff;

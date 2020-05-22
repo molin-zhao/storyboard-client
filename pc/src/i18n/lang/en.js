@@ -126,6 +126,7 @@ export default {
   LOGIN_NOW: "Login now",
   EMAIL_PHONE_ERROR: "Email or phone number is invalid.",
   CODE_ERROR: "Code format is invalid",
+  CODE_SENT_TO: "Code sent to:",
   PASSWORD_ERROR:
     "Password should contain both alphanumberic characters and symbols, length 8 - 16.",
   CONFIRM_PASSWORD_ERROR: "Entered passwords are inconsistent.",

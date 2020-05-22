@@ -396,9 +396,9 @@ export default {
       update_global_member_status: "project/update_global_member_status",
       push_messages: "message/push_messages",
       save_message: "message/save_message",
-      reset_message: "message/delete_message",
-      reset_project: "project/delete_project",
-      reset_team: "team/delete_team",
+      reset_message: "message/reset_message",
+      reset_project: "project/reset_project",
+      reset_team: "team/reset_team",
       reset_warehouse: "warehouse/reset_warehouse",
       reset_user: "user/reset_user"
     }),
@@ -450,30 +450,25 @@ export default {
             const delResp = await this.$http.post(delUrl, { id, messageIds });
           }
           const socket = createSocketConnection({
+            auth: { id, token },
             online: this.userOnlineCallback,
             offline: this.userOfflineCallback,
-            receiveMessage: this.userReceiveMessageCallback
+            chat: this.userReceiveMessageCallback,
+            loginAttempt: this.userLoginAttemptCallback
           });
           if (!socket.connected) {
             socket.disconnect();
             throw new Error("connection failed");
           }
-          socket.emit("establish-connection", userInfo, ack => {
-            if (!ack) {
-              socket.disconnect();
-              throw new Error("connection failed");
-            } else {
-              console.log("connected");
-              this.add_socket(socket);
-              this.push_messages(msg);
-              this.save_message();
-              this.socketConnecting = false;
-              return resolve();
-            }
-          });
+          console.log("connected");
+          this.add_socket(socket);
+          this.push_messages(msg);
+          this.save_message();
+          return resolve();
         } catch (err) {
-          this.socketConnecting = false;
           return reject(err);
+        } finally {
+          this.socketConnecting = false;
         }
       });
     },
@@ -564,6 +559,7 @@ export default {
         interval: 5000
       });
     },
+    userLoginAttemptCallback(message) {},
     logout() {
       this.$confirm.show({
         title: this.$t("LOGOUT_TITLE"),

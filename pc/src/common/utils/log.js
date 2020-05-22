@@ -961,6 +961,49 @@ const generateLookup = projects => {
   return { projectLookup, phaseLookup, groupLookup, taskLookup };
 };
 
+const generateMap = projects => {
+  let projectsCopy = Object.assign({}, projects);
+  return Object.assign({}, recursivelyUnwind(projectsCopy, "_id"));
+};
+
+const recursivelyUnwind = (arr, field) => {
+  try {
+    if (!arr || arr.constructor !== Array) throw new Error("param invalid");
+    let obj = {};
+    for (let val of arr) {
+      for (let subKey of Object.keys(val)) {
+        let subVal = val[subKey];
+        if (subVal.constructor === Array) {
+          val[subKey] = recursivelyUnwind(subVal, field);
+        }
+      }
+      if (!val[field]) throw new Error("field not exist");
+      let key = val[field];
+      obj[key] = val;
+    }
+    return obj;
+  } catch (err) {
+    console.log(err);
+    return {};
+  }
+};
+
+const unwind = (arr, field) => {
+  try {
+    if (!arr || arr.constructor !== Array) throw new Error("param invalid");
+    let obj = {};
+    for (let val of arr) {
+      if (!val[field]) throw new Error("field not exist");
+      let key = val[field];
+      obj[key] = val;
+    }
+    return obj;
+  } catch (err) {
+    console.log(err);
+    return {};
+  }
+};
+
 export {
   addLog,
   removeLog,
@@ -983,5 +1026,6 @@ export {
   deleteProject,
   generateLookup,
   addProjectMembers,
-  editTaskMembers
+  editTaskMembers,
+  generateMap
 };

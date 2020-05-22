@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="register-wrapper">
     <transition name="profile">
       <set-profile v-if="finishedRegister" />
     </transition>
@@ -17,6 +17,7 @@
               )
             "
             @on-change="checkEmailOrPhoneValue"
+            @on-typing="resetAccountError"
           />
         </div>
         <span
@@ -31,6 +32,9 @@
             >{{ this.$t("LOGIN_NOW") }}</router-link
           ></span
         >
+        <span v-else-if="codeDest" class="form-text text-danger error-text">
+          {{ computedCodeDest }}
+        </span>
         <span v-else class="form-text text-danger error-text">{{
           emailOrPhoneError
         }}</span>
@@ -45,9 +49,10 @@
               class="form-control code-input"
               :style="`${codeError ? 'border-color:lightcoral' : null}`"
               @on-change="checkCodeError"
+              @on-typing="resetCodeError"
             />
             <a
-              @click.stop="getSMSPassword"
+              @click.stop="verifyHuman"
               class="input-group-append input-group-text code-btn"
               :style="
                 `
@@ -68,14 +73,16 @@
         </div>
         <span class="form-text text-danger error-text">{{ codeError }}</span>
       </div>
-      <div v-if="smsPassword" class="form-group form-left-centered">
-        <drag-verify
-          :on-success="verifySuccess"
-          :on-failure="verifyFailure"
-          :start-text="$t('SLIDE_TO_RIGHT')"
-          :success-text="$t('VERIFY_SUCCESS')"
-        />
-      </div>
+      <transition name="verify">
+        <div v-if="showVerification" class="form-group form-left-centered">
+          <drag-verify
+            :on-success="verifySuccess"
+            :on-failure="verifyFailure"
+            :start-text="$t('SLIDE_TO_RIGHT')"
+            :success-text="$t('VERIFY_SUCCESS')"
+          />
+        </div>
+      </transition>
       <div class="form-group form-left-centered">
         <label>{{ $t("PASSWORD") }}</label>
         <div class="form-row-div">
@@ -85,6 +92,7 @@
             class="form-control"
             :style="computedInputStyle(passwordError)"
             @on-change="checkPasswordError"
+            @on-typing="resetPasswordError"
           />
         </div>
         <span class="form-text text-danger error-text">{{
@@ -98,6 +106,7 @@
             class="form-control"
             :style="computedInputStyle(confirmPasswordError)"
             @on-change="checkConfirmPasswordError"
+            @on-typing="resetConfirmPasswordError"
           />
         </div>
         <span class="form-text text-danger error-text">{{
@@ -135,6 +144,7 @@ import {
   encrypt,
   decrypt
 } from "@/common/utils/form";
+import { generateCode } from "@/common/utils/number";
 import ajaxInput from "@/components/ajaxInput";
 import dragVerify from "@/components/dragVerify";
 import setProfile from "@/components/setProfile";
@@ -161,13 +171,14 @@ export default {
       codeError: "",
       passwordError: "",
       confirmPasswordError: "",
+      codeDest: "",
       resendTimer: null,
       resendCount: 60,
       renderInterval: null,
       registeredEmailOrPhone: [],
       processing: false,
       finishedRegister: false,
-      smsPassword: ""
+      showVerification: false
     };
   },
   computed: {
@@ -237,6 +248,11 @@ export default {
         return this.$t("ALREADY_REGISTERED");
       }
       return "";
+    },
+    computedCodeDest() {
+      const { codeDest } = this;
+      if (codeDest) return `${this.$t("CODE_SENT_TO")} ${codeDest}`;
+      return "";
     }
   },
   methods: {
@@ -250,52 +266,51 @@ export default {
     changeLoginMode() {
       this.registerByPassword = !this.registerByPassword;
     },
-    async getSMSPassword() {
+    verifyHuman() {
+      this.showVerification = true;
+      this.codeDest = "";
+    },
+    async sendCode() {
       try {
-        let id = this.emailOrPhoneValue;
-        let url = URL.GET_SMS_PASSWORD(id);
+        const { emailOrPhoneError, emailOrPhoneValue } = this;
+        if (emailOrPhoneError) return this.showSMSError();
+        let account = emailOrPhoneValue.trim();
+        let code = generateCode();
+        let token = encrypt(account, code);
+        let url = URL.POST_SMS_SEND_CODE(isPhone(account));
         this.processing = true;
-        const res = await this.$http.get(url);
-        this.smsPassword = res.data.data;
-        this.processing = false;
-      } catch (err) {
-        if (err.status === 406) {
-          let exId = err.data.data;
+        const res = await this.$http.post(url, { account, token, code });
+        if (res.status === 200) {
+          this.sent = true;
+          this.resendCount = 60;
+          this.renderInterval = setInterval(() => {
+            if (this.resendCount > 0) return this.resendCount--;
+            this.resendCount = 60;
+            this.sent = false;
+            clearInterval(this.renderInterval);
+          }, 1000);
+          this.updateCodeDest(res.data.data);
+        } else {
+          let exId = res.data.data;
           const { registeredEmailOrPhone } = this;
           if (registeredEmailOrPhone.indexOf(exId) === -1) {
             this.registeredEmailOrPhone = [...registeredEmailOrPhone, exId];
           }
         }
-        this.showSMSError();
-        this.processing = false;
-      }
-    },
-    async sendCode() {
-      try {
-        const { smsPassword, emailOrPhoneError, emailOrPhoneValue } = this;
-        if (!smsPassword || emailOrPhoneError) return this.showSMSError();
-        const trimmedAccount = emailOrPhoneValue.trim();
-        let token = encrypt(trimmedAccount, smsPassword);
-        let url = URL.POST_SMS_SEND_CODE(isPhone(trimmedAccount));
-        this.processing = true;
-        const res = await this.$http.post(url, {
-          account: trimmedAccount,
-          token
-        });
-        this.sent = true;
-        this.resendCount = 60;
-        this.renderInterval = setInterval(() => {
-          if (this.resendCount > 0) return this.resendCount--;
-          this.resendCount = 60;
-          this.sent = false;
-          clearInterval(this.renderInterval);
-        }, 1000);
       } catch (err) {
         console.log(err);
         this.showSMSError();
       } finally {
         this.processing = false;
-        this.smsPassword = "";
+        this.showVerification = false;
+      }
+    },
+    updateCodeDest(data) {
+      const { nationcode, mobile } = data;
+      if (nationcode && mobile) {
+        this.codeDest = `+${nationcode} ${mobile}`;
+      } else {
+        this.codeDest = data;
       }
     },
     checkEmailOrPhoneValue(val) {
@@ -389,14 +404,30 @@ export default {
         message: message ? message : this.$t("REGISTER_ERROR"),
         interval: 5000
       });
+    },
+    resetAccountError() {
+      if (this.emailOrPhoneError) this.emailOrPhoneError = "";
+    },
+    resetPasswordError() {
+      if (this.passwordError) this.passwordError = "";
+    },
+    resetCodeError() {
+      if (this.codeError) this.codeError = "";
+    },
+    resetConfirmPasswordError() {
+      if (this.confirmPasswordError) this.confirmPasswordError = "";
+    }
+  },
+  watch: {
+    emailOrPhoneValue(newVal, oldVal) {
+      if (this.showVerification) this.showVerification = false;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../common/theme/container.css";
-.wrapper {
+.register-wrapper {
   width: 100%;
   height: 100%;
   display: flex;
@@ -451,6 +482,22 @@ export default {
 }
 .profile-enter-active,
 .profile-leave-active {
+  transition: all 0.35s;
+}
+
+// before enter and after leave
+.verify-enter,
+.verify-leave-to {
+  opacity: 0;
+}
+
+// after enter and before leave
+.verify-leave,
+.verify-enter-to {
+  opacity: 1;
+}
+.verify-enter-active,
+.verify-leave-active {
   transition: all 0.35s;
 }
 </style>

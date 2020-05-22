@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="login-wrapper">
     <form style="width: 30%">
       <div class="form-group form-left-centered">
         <label for="exampleInputEmail1">{{ $t("EMAIL_PHONE") }}</label>
@@ -12,7 +12,10 @@
             @on-typing="resetAccountError"
           />
         </div>
-        <span class="form-text text-danger error-text">{{
+        <span v-if="codeDest" class="form-text text-danger error-text">
+          {{ computedCodeDest }}
+        </span>
+        <span v-else class="form-text text-danger error-text">{{
           emailOrPhoneError
         }}</span>
       </div>
@@ -39,7 +42,7 @@
               @on-typing="resetCodeError"
             />
             <a
-              @click.stop="getSMSPassword"
+              @click.stop="verifyHuman"
               class="input-group-append input-group-text code-btn"
               :style="
                 `
@@ -65,14 +68,16 @@
           codeError
         }}</span>
       </div>
-      <div v-if="smsPassword" class="form-group form-left-centered">
-        <drag-verify
-          :on-success="verifySuccess"
-          :on-failure="verifyFailure"
-          :start-text="$t('SLIDE_TO_RIGHT')"
-          :success-text="$t('VERIFY_SUCCESS')"
-        />
-      </div>
+      <transition name="verify">
+        <div v-if="showVerification" class="form-group form-left-centered">
+          <drag-verify
+            :on-success="verifySuccess"
+            :on-failure="verifyFailure"
+            :start-text="$t('SLIDE_TO_RIGHT')"
+            :success-text="$t('VERIFY_SUCCESS')"
+          />
+        </div>
+      </transition>
       <div class="form-group form-check form-space-between">
         <div class="form-group">
           <input
@@ -126,6 +131,7 @@ import {
   encrypt,
   decrypt
 } from "@/common/utils/form";
+import { generateCode } from "@/common/utils/number";
 import { LOCAL_SECRET_LEN } from "@/common/config/crypto";
 import ajaxInput from "@/components/ajaxInput";
 import * as URL from "@/common/utils/url";
@@ -146,11 +152,13 @@ export default {
       emailOrPhoneError: "",
       codeError: "",
       passwordError: "",
+      codeDest: "",
       resendTimer: null,
       resendCount: 60,
       renderInterval: null,
-      smsPassword: "",
-      processing: false
+      showVerification: false,
+      processing: false,
+      alreadyLoggin: false
     };
   },
   mounted() {
@@ -227,6 +235,11 @@ export default {
       let disabled =
         sent || processing || !emailOrPhoneValue || emailOrPhoneError;
       return disabled ? true : false;
+    },
+    computedCodeDest() {
+      const { codeDest } = this;
+      if (codeDest) return `${this.$t("CODE_SENT_TO")} ${codeDest}`;
+      return "";
     }
   },
   methods: {
@@ -240,63 +253,42 @@ export default {
     changeLoginMode() {
       this.loginByPassword = !this.loginByPassword;
     },
-    async getSMSPassword() {
-      try {
-        let id = this.emailOrPhoneValue;
-        let url = URL.GET_SMS_PASSWORD(id);
-        this.processing = true;
-        const res = await this.$http.get(url);
-        if (res.status === 200) {
-          this.smsPassword = res.data.data;
-        } else if (res.status === 202) {
-          // user already registered
-          // 406 request not acceptable
-          let exId = res.data.data;
-          const { registeredEmailOrPhone } = this;
-          if (registeredEmailOrPhone.indexOf(exId) === -1) {
-            this.registeredEmailOrPhone = [...registeredEmailOrPhone, exId];
-          }
-        } else {
-          this.showSMSError();
-        }
-        this.processing = false;
-      } catch (err) {
-        console.log(err);
-        this.showSMSError();
-        this.processing = false;
-      }
+    verifyHuman() {
+      this.showVerification = true;
     },
     async sendCode() {
       try {
-        const { smsPassword, emailOrPhoneError, emailOrPhoneValue } = this;
-        if (!smsPassword || emailOrPhoneError) return this.showSMSError();
-        let token = encrypt(emailOrPhoneValue, smsPassword);
+        const { emailOrPhoneError, emailOrPhoneValue } = this;
+        if (emailOrPhoneError) return this.showSMSError();
+        let account = emailOrPhoneValue.trim();
+        let code = generateCode();
+        let token = encrypt(emailOrPhoneValue, code);
         let url = URL.POST_SMS_SEND_CODE(isPhone(emailOrPhoneValue));
         this.processing = true;
-        const res = await this.$http.post(
-          url,
-          { account: emailOrPhoneValue, token },
-          { emulateJSON: true }
-        );
-        if (res.status === 200) {
-          this.sent = true;
+        const res = await this.$http.post(url, { account, token, code });
+        this.sent = true;
+        this.resendCount = 60;
+        this.renderInterval = setInterval(() => {
+          if (this.resendCount > 0) return this.resendCount--;
           this.resendCount = 60;
-          this.renderInterval = setInterval(() => {
-            if (this.resendCount > 0) return this.resendCount--;
-            this.resendCount = 60;
-            this.sent = false;
-            clearInterval(this.renderInterval);
-          }, 1000);
-        } else {
-          this.showSMSError();
-        }
-        this.processing = false;
-        this.smsPassword = "";
+          this.sent = false;
+          clearInterval(this.renderInterval);
+        }, 1000);
+        this.updateCodeDest(res.data.data);
       } catch (err) {
         console.log(err);
         this.showSMSError();
+      } finally {
         this.processing = false;
-        this.smsPassword = "";
+        this.showVerification = false;
+      }
+    },
+    updateCodeDest(data) {
+      const { nationcode, mobile } = data;
+      if (nationcode && mobile) {
+        this.codeDest = `+${nationcode} ${mobile}`;
+      } else {
+        this.codeDest = data;
       }
     },
     checkEmailOrPhoneValue(val) {
@@ -318,13 +310,13 @@ export default {
       );
     },
     async login() {
+      const {
+        emailOrPhoneValue,
+        codeValue,
+        passwordValue,
+        loginByPassword
+      } = this;
       try {
-        const {
-          emailOrPhoneValue,
-          codeValue,
-          passwordValue,
-          loginByPassword
-        } = this;
         this.status = "doing";
         let url = URL.POST_USER_LOGIN(loginByPassword);
         let account = emailOrPhoneValue.trim();
@@ -337,9 +329,7 @@ export default {
               password: encrypt(password, secret)
             }
           : { account, code };
-        const res = await this.$http.post(url, body, {
-          emulateJSON: true
-        });
+        const res = await this.$http.post(url, body);
         if (res.status === 200) {
           // login successfully
           this.showLoginError(this.$t("LOGIN_SUCCESS"), "success");
@@ -355,24 +345,20 @@ export default {
               localStorage.setItem("password", encryptedPass);
             }
           }
-          this.status = "done";
           setTimeout(() => {
             this.$router.replace("/storyboard");
           }, 1000);
-        } else if (res.status === 202) {
-          // code error
-          if (loginByPassword) {
-            this.showLoginError(this.$t("PASSWORD_NOT_MATCH"), "danger");
-          } else {
-            this.showSMSError(this.$t("SMS_NOT_MATCH"), "danger");
-          }
-          this.status = "todo";
         } else {
-          this.showLoginError();
-          this.status = "todo";
+          // already logged in
+          this.alreadyLoggin = true;
         }
+        this.status = "done";
       } catch (err) {
-        this.showLoginError();
+        if (loginByPassword) {
+          this.showLoginError(this.$t("PASSWORD_NOT_MATCH"), "danger");
+        } else {
+          this.showSMSError(this.$t("SMS_NOT_MATCH"), "danger");
+        }
         this.status = "todo";
       }
     },
@@ -405,12 +391,17 @@ export default {
     resetCodeError() {
       if (this.codeError) this.codeError = "";
     }
+  },
+  watch: {
+    emailOrPhoneValue(newVal, oldVal) {
+      if (this.showVerification) this.showVerification = false;
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
+.login-wrapper {
   width: 100%;
   height: 100%;
   display: flex;
@@ -451,5 +442,39 @@ export default {
 }
 .code-btn:focus {
   outline: none;
+}
+
+// before enter and after leave
+.already-loggin-enter,
+.already-loggin-leave-to {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+// after enter and before leave
+.already-loggin-leave,
+.already-loggin-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+.already-loggin-enter-active,
+.already-loggin-leave-active {
+  transition: all 0.35s;
+}
+
+// before enter and after leave
+.verify-enter,
+.verify-leave-to {
+  opacity: 0;
+}
+
+// after enter and before leave
+.verify-leave,
+.verify-enter-to {
+  opacity: 1;
+}
+.verify-enter-active,
+.verify-leave-active {
+  transition: all 0.35s;
 }
 </style>

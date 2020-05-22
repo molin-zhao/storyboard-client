@@ -19,6 +19,7 @@ import {
 } from "@/common/utils/socket";
 const state = {
   projects: [],
+  projectsMap: {}, // unwind arrays to objects
   activeIndex: 0,
   logs: {}, // tree
   taskLookup: {}, // reverse index for task
@@ -53,25 +54,32 @@ const mutations = {
     state.logs = removeLog(state, payload);
   },
   add_task(state, payload) {
-    addTask(state, payload.groupId, payload.task);
+    const { groupId, task } = payload;
+    addTask(state, groupId, task);
   },
   add_group(state, payload) {
-    addGroup(state, payload.phaseId, payload.group);
+    const { phaseId, group } = payload;
+    addGroup(state, phaseId, group);
   },
   add_phase(state, payload) {
-    addPhase(state, payload.projectId, payload.phase);
+    const { projectId, phase } = payload;
+    addPhase(state, projectId, phase);
   },
   delete_task(state, payload) {
-    deleteTask(state, payload.groupId, payload.taskId);
+    const { groupId, taskId } = payload;
+    deleteTask(state, groupId, taskId);
   },
   delete_group(state, payload) {
-    deleteGroup(state, payload.phaseId, payload.groupId);
+    const { phaseId, groupId } = payload;
+    deleteGroup(state, phaseId, groupId);
   },
   delete_phase(state, payload) {
-    deletePhase(state, payload.projectId, payload.phaseId);
+    const { projectId, phaseId } = payload;
+    deletePhase(state, projectId, phaseId);
   },
   delete_project(state, payload) {
-    deleteProject(state, payload.projectId);
+    const { projectId } = payload;
+    deleteProject(state, projectId);
   },
   add_lookup(state, payload) {
     state.groupLookup = payload.groupLookup;

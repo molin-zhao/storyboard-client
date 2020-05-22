@@ -1,8 +1,8 @@
 <template>
   <div class="home-wrapper">
-    <storyboardHeader :mobile="mobile"></storyboardHeader>
-    <storyboardContent></storyboardContent>
-    <storyboardFooter></storyboardFooter>
+    <storyboard-header :mobile="mobile"></storyboard-header>
+    <storyboard-content></storyboard-content>
+    <storyboard-footer></storyboard-footer>
   </div>
 </template>
 
