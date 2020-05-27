@@ -1,5 +1,5 @@
 <template>
-  <div class="home-wrapper">
+  <div class="home-wrapper" v-title :data-title="homeTitle">
     <storyboard-header :mobile="mobile"></storyboard-header>
     <storyboard-content></storyboard-content>
     <storyboard-footer></storyboard-footer>
@@ -19,6 +19,9 @@ export default {
   computed: {
     mobile() {
       return this.$route.params.mobile;
+    },
+    homeTitle() {
+      return this.$t("HOME_TITLE");
     }
   }
 };

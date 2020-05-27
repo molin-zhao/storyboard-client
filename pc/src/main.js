@@ -32,6 +32,10 @@ Vue.directive("tooltip", function(el, binding) {
     trigger: "hover"
   });
 });
+Vue.directive("title", function(el, binding) {
+  document.title = el.dataset.title;
+});
+
 VueAMap.initAMapApiLoader({
   key: "234d5c63b4c1533e76233a4d1da9f5d2",
   plugin: [

@@ -1,8 +1,13 @@
-let API_HOST = process.env.API_HOST;
-let PASSPORT_HOST = process.env.PASSPORT_HOST;
-let DFS_HOST = process.env.DFS_HOST;
-let SOCKET_HOST = process.env.SOCKET_HOST;
-let COMPUTE_HOST = process.env.COMPUTE_HOST;
+// const API_HOST = "/api";
+// const PASSPORT_HOST = "/passport";
+// const DFS_HOST = "/dfs";
+// const SOCKET_HOST = "/socket";
+// const COMPUTE_HOST = "/compute";
+const API_HOST = process.env.API_HOST;
+const PASSPORT_HOST = process.env.PASSPORT_HOST;
+const DFS_HOST = process.env.DFS_HOST;
+const SOCKET_HOST = process.env.SOCKET_HOST;
+const COMPUTE_HOST = process.env.COMPUTE_HOST;
 export const GET_SMS_PASSWORD = id =>
   PASSPORT_HOST + `/user/sms/password?id=${id}`;
 export const POST_SMS_SEND_CODE = isPhone => {

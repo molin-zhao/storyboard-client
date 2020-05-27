@@ -1,5 +1,9 @@
 export default {
+  // titles
+  HOME_TITLE: "Welcome to Cokework",
+  STORYBOARD_TITLE: "My dashboard",
   // labels
+  COKEWISE: "Cokewise Chengdu. All rights reserved",
   LANGUAGE: "Language",
   LANGUAGE_SELECT: "Language select:",
   DEFAULT: "Default",

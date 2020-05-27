@@ -1,5 +1,9 @@
 export default {
+  // titles
+  HOME_TITLE: "欢迎使用Cokework",
+  STORYBOARD_TITLE: "我的任务板",
   // labels
+  COKEWISE: "成都冰阔洛网络科技有限公司",
   LANGUAGE: "语言",
   LANGUAGE_SELECT: "语言选择：",
   LOGIN: "登录",

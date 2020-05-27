@@ -1,5 +1,10 @@
 <template>
-  <div class="storyboard-container" @click="resetVisibleComponents">
+  <div
+    class="storyboard-container"
+    @click="resetVisibleComponents"
+    v-title
+    :data-title="storyboardTitle"
+  >
     <loading
       v-if="storyboardLoading"
       :active="true"
@@ -339,6 +344,9 @@ export default {
         }
         return "list-group-item list-group-item-action";
       };
+    },
+    storyboardTitle() {
+      return this.$t("STORYBOARD_TITLE");
     },
     computedProjectEditedStyle() {
       return function(index) {
