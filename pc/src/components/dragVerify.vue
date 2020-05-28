@@ -151,10 +151,10 @@ export default {
     @include jc-flex;
     height: 40px; /*no*/
     &.success {
-      background-color: #7ac23c;
+      background-color: #5cb85c;
       color: #fff;
       div {
-        color: #7ac23c;
+        color: #5cb85c;
       }
     }
     div {
@@ -163,7 +163,7 @@ export default {
       left: 0;
       width: 60px; /*no*/
       height: 100%;
-      color: #919191;
+      color: lightgrey;
       background-color: #fff;
       border: 1px solid #bbb;
       cursor: pointer;

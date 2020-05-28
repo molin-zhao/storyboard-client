@@ -9,43 +9,7 @@ module.exports = {
     // Paths
     assetsSubDirectory: "static",
     assetsPublicPath: "/",
-    proxyTable: {
-      // "/api": {
-      //   target: process.env.API_HOST,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/api": ""
-      //   }
-      // },
-      // "/passport": {
-      //   target: process.env.PASSPORT_HOST,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/passport": ""
-      //   }
-      // },
-      // "/dfs": {
-      //   target: process.env.DFS_HOST,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/dfs": ""
-      //   }
-      // },
-      // "/socket": {
-      //   target: process.env.SOCKET_HOST,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/socket": ""
-      //   }
-      // },
-      // "/compute": {
-      //   target: process.env.COMPUTE_HOST,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/compute": ""
-      //   }
-      // }
-    },
+    proxyTable: {},
 
     // Various Dev Server settings
     host: "localhost", // can be overwritten by process.env.HOST
