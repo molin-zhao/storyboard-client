@@ -434,7 +434,7 @@ export default {
         this.sync_project(resp.data.data);
       } catch (err) {
       } finally {
-        delete this.syncIds[projectId];
+        this.$delete(this.syncIds, projectId);
       }
     },
     async saveProject() {

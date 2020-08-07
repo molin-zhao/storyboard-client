@@ -1,6 +1,9 @@
 <template>
   <div class="login-wrapper">
-    <form style="width: 30%">
+    <transition name="already-loggin">
+      <already-loggin v-show="alreadyLoggin" />
+    </transition>
+    <form v-show="!alreadyLoggin" style="width: 30%">
       <div class="form-group form-left-centered">
         <label for="exampleInputEmail1">{{ $t("EMAIL_PHONE") }}</label>
         <div class="form-row" style="width: 100%; margin: 0; padding: 0">
@@ -134,11 +137,13 @@ import {
 import { generateCode } from "@/common/utils/number";
 import { LOCAL_SECRET_LEN } from "@/common/config/crypto";
 import ajaxInput from "@/components/ajaxInput";
+import alreadyLoggin from "@/components/alreadyLoggin";
 import * as URL from "@/common/utils/url";
 import { mapActions, mapMutations } from "vuex";
 export default {
   components: {
-    ajaxInput
+    ajaxInput,
+    alreadyLoggin
   },
   data() {
     return {
@@ -350,6 +355,8 @@ export default {
           }, 1000);
         } else {
           // already logged in
+          // status code is 202
+
           this.alreadyLoggin = true;
         }
         this.status = "done";

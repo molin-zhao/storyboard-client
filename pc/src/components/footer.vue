@@ -3,6 +3,10 @@
     <span class="display-only">© {{ copyRight }} {{ $t("COKEWISE") }}</span>
     <div class="beian">
       <img src="/static/beian.png" />
+      <a
+        href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=51010702001906"
+        >{{ beianSecurityCode }}</a
+      >
       <a rel="nofollow" href="http://beian.miit.gov.cn">{{ beianCode }}</a>
     </div>
   </div>
@@ -14,11 +18,14 @@ export default {
     copyRight: () => {
       let date = new Date();
       let currentYear = date.getFullYear();
-      if (currentYear > 2018) return `2018-${currentYear}`;
-      else return `2018`;
+      if (currentYear > 2019) return `2019-${currentYear}`;
+      else return `2019`;
     },
     beianCode() {
       return "蜀ICP备20015350号";
+    },
+    beianSecurityCode() {
+      return "川公网安备 51010702001906号";
     }
   }
 };
@@ -46,12 +53,13 @@ export default {
     justify-content: center;
     align-items: center;
     img {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
     }
     a {
       font-size: 12px;
       margin-left: 5px;
+      margin-right: 5px;
     }
     a:hover {
       text-decoration: none;

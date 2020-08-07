@@ -19,6 +19,7 @@ import Confirm from "@/plugins/confirm";
 import Chatbox from "@/plugins/chatbox";
 import Mailbox from "@/plugins/mailbox";
 import Task from "@/plugins/task";
+import LoginAttempt from "@/plugins/loginAttempt";
 
 import store from "@/store";
 import router from "@/router";
@@ -38,17 +39,9 @@ Vue.directive("title", function(el, binding) {
 
 VueAMap.initAMapApiLoader({
   key: "234d5c63b4c1533e76233a4d1da9f5d2",
-  plugin: [
-    "AMap.Autocomplete",
-    "AMap.PlaceSearch",
-    "AMap.Scale",
-    "AMap.OverView",
-    "AMap.ToolBar",
-    "AMap.MapType",
-    "AMap.PolyEditor",
-    "AMap.CircleEditor"
-  ],
-  v: "1.4.4"
+  plugin: ["Geolocation"],
+  v: "1.4.4",
+  uiVersion: "1.0.11"
 });
 Vue.use(Alert);
 Vue.use(Toast);
@@ -59,6 +52,7 @@ Vue.use(Task);
 Vue.use(VueScrollLock);
 Vue.use(VueResource);
 Vue.use(VueAMap);
+Vue.use(LoginAttempt);
 
 Vue.http.options.emulateJSON = true;
 Vue.http.interceptors.push(function(req, next) {

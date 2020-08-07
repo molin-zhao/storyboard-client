@@ -7,17 +7,36 @@
       @click="stopPropagation"
     >
       <transition name="top-in">
-        <div class="loggin-map-wrapper">
-          <div>
-            <span>{{ computedLoginAttemptLocation }}</span>
+        <div class="loggin-map-wrapper display-only">
+          <div class="loggin-map-info">
+            <span style="font-weight: bold">{{ $t("NEW_LOGIN_ATTEMPT") }}</span>
+            <span style="font-size: 12px">{{
+              computedLoginAttemptLocation
+            }}</span>
           </div>
-          <div>
-            <el-amap></el-amap>
+          <div class="loggin-map-content">
+            <div class="content-wrapper" v-if="center && center.length === 2">
+              <amap :center="center" />
+            </div>
+            <div class="content-wrapper" v-else>
+              <span v-if="loading" class="spinner-border text-primary"></span>
+              <span v-else>{{ $t("LOADING_MAP_ERROR") }}</span>
+            </div>
           </div>
-          <div>
-            <a></a>
-            <div></div>
-            <a></a>
+          <div class="loggin-map-btns">
+            <a
+              class="map-btn"
+              style="color: var(--main-color-blue)"
+              @click="allowLoginAttempt"
+              >{{ $t("CONFIRM") }}</a
+            >
+            <div class="btn-separator" />
+            <a
+              class="map-btn"
+              style="color: var(--main-color-danger)"
+              @click="denyLoginAttempt"
+              >{{ $t("DENY") }}</a
+            >
           </div>
         </div>
       </transition>
@@ -27,58 +46,43 @@
 
 <script>
 import { stopPropagation } from "@/common/utils/mouse";
+import amap from "@/components/map";
 export default {
+  components: {
+    amap
+  },
   data() {
     return {
       visible: false,
-      loaded: false
+      loaded: false,
+      loading: false
     };
   },
   props: {
     geo: {
       type: Object
+    },
+    center: {
+      type: Array
     }
   },
   computed: {
     computedLoginAttemptLocation() {
       const { geo } = this;
-    },
-    computedMapPlugin() {
-      const self = this;
-      return {
-        plugin: [
-          {
-            timeout: 100,
-            zoomToAccuracy: true,
-            extensions: "all",
-            pName: "Geolocation",
-            events: {
-              init: o => {
-                o.getCurrentPosition((status, result) => {
-                  console.log(result);
-                  if (result && result.position) {
-                    self.lng = result.position.lng;
-                    self.lat = result.position.lat;
-                    self.center = [self.lng, self.lat];
-                    self.loaded = true;
-                    self.$nextTick();
-                  }
-                });
-              }
-            }
-          }
-        ]
-      };
+      const { province, city, district } = geo;
+      return `${this.$t("NEW_LOGIN_FROM")}${province} ${city} ${district}`;
     }
   },
   methods: {
     stopPropagation,
     show() {
-      this.visible = true;
+      if (!this.visible) this.visible = true;
     },
     hide() {
-      this.visible = false;
-    }
+      if (this.visible) this.visible = false;
+    },
+    allowLoginAttempt() {},
+    denyLoginAttempt() {}
   }
 };
 </script>
@@ -91,11 +95,61 @@ export default {
   height: 20%;
   border-radius: 10px;
   background-color: white;
-  border: 1px gainsboro solid;
+  border: 1px whitesmoke solid;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.loggin-map-info {
+  width: 90%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  span {
+    width: 100%;
+  }
+}
+.loggin-map-content {
+  width: 90%;
+  height: 55%;
+  .content-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    span {
+      color: var(--main-color-blue);
+    }
+  }
+}
+
+.loggin-map-btns {
+  width: 90%;
+  height: 15%;
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  align-items: center;
+  .map-btn {
+    cursor: pointer;
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-separator {
+    width: 1px;
+    height: 90%;
+    background-color: gainsboro;
+  }
 }
 
 .fade-enter,

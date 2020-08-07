@@ -1,7 +1,7 @@
 <template>
   <div class="register-wrapper">
     <transition name="profile">
-      <set-profile v-if="finishedRegister" />
+      <set-profile v-show="finishedRegister" />
     </transition>
     <form v-show="!finishedRegister" style="width: 30%">
       <div class="form-group form-left-centered">
@@ -343,35 +343,29 @@ export default {
       try {
         const { emailOrPhoneValue, codeValue, passwordValue } = this;
         this.status = "doing";
-        let url = URL.POST_REGISTER_LOCAL();
-        let account = emailOrPhoneValue.trim();
-        let password = passwordValue.trim();
-        let code = codeValue.trim();
-        let encryptPassword = encrypt(
-          password,
+        const url = URL.POST_REGISTER_LOCAL();
+        const account = emailOrPhoneValue.trim();
+        const code = codeValue.trim();
+        const password = encrypt(
+          passwordValue.trim(),
           account.substr(0, LOCAL_SECRET_LEN)
         );
-        let defaultGender = "m";
-        let avatar = getRandomAvatar(defaultGender, IMG_SRC);
-        const res = await this.$http.post(
-          url,
-          {
-            account,
-            code,
-            password: encryptPassword,
-            avatar,
-            gender: defaultGender
-          },
-          {
-            emulateJSON: true
-          }
-        );
+        const gender = "m";
+        const avatar = getRandomAvatar(gender, IMG_SRC);
+        const res = await this.$http.post(url, {
+          account,
+          code,
+          password,
+          avatar,
+          gender,
+          length: LOCAL_SECRET_LEN
+        });
         // register successfully
         let data = res.data.data;
         this.save_credential(data);
         this.add_userinfo(data);
         this.save_userinfo(data);
-        this.showRegisterError(this.$t("REGISTER_SUCCESS"), "success");
+        this.showRegisterInfo(this.$t("REGISTER_SUCCESS"), "success");
         this.status = "done";
         setTimeout(() => {
           this.finishedRegister = true;
@@ -380,7 +374,7 @@ export default {
         if (err.status === 406) {
           this.showSMSError(this.$t("SMS_NOT_MATCH"), "danger");
         } else {
-          this.showRegisterError();
+          this.showRegisterInfo();
         }
         this.status = "todo";
       }
@@ -398,7 +392,7 @@ export default {
         interval: 5000
       });
     },
-    showRegisterError(message, type) {
+    showRegisterInfo(message, type) {
       return this.$alert.show({
         type: type ? type : "warning",
         message: message ? message : this.$t("REGISTER_ERROR"),

@@ -454,7 +454,7 @@ export default {
           const msg = getResp.data.data;
           if (msg.length > 0) {
             let messageIds = parser(msg, "_id");
-            const delUrl = URL.POST_DEL_USER_MESSAGE();
+            const delUrl = URL.POST_DELETE_USER_MESSAGE();
             const delResp = await this.$http.post(delUrl, { id, messageIds });
           }
           const socket = createSocketConnection({

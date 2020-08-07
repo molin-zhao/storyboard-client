@@ -68,6 +68,10 @@ export default {
     $(".carousel").carousel({
       interval: 5000
     });
+    // this.$loginAttempt.show({
+    //   center: [121.59996, 31.197646],
+    //   geo: { province: "上海", city: "上海", district: "浦东新区" }
+    // });
   },
   methods: {}
 };

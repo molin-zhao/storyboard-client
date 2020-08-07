@@ -5,7 +5,7 @@ const SOCKET_HOST = process.env.SOCKET_HOST;
 const COMPUTE_HOST = process.env.COMPUTE_HOST;
 
 export const GET_SMS_PASSWORD = id =>
-  PASSPORT_HOST + `/user/sms/password?id=${id}`;
+  PASSPORT_HOST + `/user/sms/password/${id}`;
 export const POST_SMS_SEND_CODE = isPhone => {
   if (isPhone) return PASSPORT_HOST + "/user/sms/phone";
   return PASSPORT_HOST + "/user/sms/email";
@@ -33,11 +33,11 @@ export const POST_FILE_UPLOAD = () => {
 };
 
 export const DELETE_DFS_DELETE = id => {
-  return DFS_HOST + `/dfs/delete?id=${id}`;
+  return DFS_HOST + `/dfs/${id}`;
 };
 
 export const POST_DFS_DELETE_AVATAR = () => {
-  return DFS_HOST + "/dfs/delete/avatar";
+  return DFS_HOST + "/dfs/avatar";
 };
 
 export const POST_UPLOAD_USER_PROFILE = () => {
@@ -93,19 +93,19 @@ export const POST_SAVE_PROJECT_LOG = () => {
 };
 
 export const GET_USER_STORYBOARD = id => {
-  return API_HOST + `/user/storyboard?user=${id}`;
+  return API_HOST + `/user/storyboard/${id}`;
 };
 
 export const GET_USER_WAREHOUSE = id => {
-  return API_HOST + `/warehouse?user=${id}`;
+  return API_HOST + `/warehouse/${id}`;
 };
 
 export const GET_VERIFY_TOKEN = token => {
-  return PASSPORT_HOST + `/user/token/verify?token=${token}`;
+  return PASSPORT_HOST + `/user/token/verify/${token}`;
 };
 
 export const GET_LOGOUT = id => {
-  return PASSPORT_HOST + `/user/logout?user=${id}`;
+  return PASSPORT_HOST + `/user/logout/${id}`;
 };
 
 export const POST_LOGOUT = () => {
@@ -121,47 +121,47 @@ export const POST_SEARCH_USER = () => {
 };
 
 export const GET_ONLINE_USER = projectId => {
-  return API_HOST + `/user/online?project=${projectId}`;
+  return API_HOST + `/user/online/${projectId}`;
 };
 
 export const GET_SYNC_PROJECT = projectId => {
-  return API_HOST + `/project/sync?project=${projectId}`;
+  return API_HOST + `/project/sync/${projectId}`;
 };
 
 export const DELETE_TASK = (groupId, taskId) => {
-  return API_HOST + `/project/task/delete?id=${taskId}&&group=${groupId}`;
+  return API_HOST + `/project/task/${taskId}/${groupId}`;
 };
 
 export const DELETE_GROUP = (phaseId, groupId) => {
-  return API_HOST + `/project/group/delete?id=${groupId}&&phase=${phaseId}`;
+  return API_HOST + `/project/group/${groupId}/${phaseId}`;
 };
 
 export const DELETE_PHASE = (projectId, phaseId) => {
-  return API_HOST + `/project/phase/delete?id=${phaseId}&&project=${projectId}`;
+  return API_HOST + `/project/phase/${phaseId}/${projectId}`;
 };
 
 export const DELETE_PROJECT = projectId => {
-  return API_HOST + `/project/delete?id=${projectId}`;
+  return API_HOST + `/project/${projectId}`;
 };
 
 export const DELETE_TEAM = teamId => {
-  return API_HOST + `/team/delete?id=${teamId}`;
+  return API_HOST + `/team/${teamId}`;
 };
 
 export const GET_USER_AVATAR = userId => {
-  return API_HOST + `/user/avatar?id=${userId}`;
+  return API_HOST + `/user/avatar/${userId}`;
 };
 
 export const GET_USER_ONLINE = userId => {
-  return API_HOST + `/user/online?id=${userId}`;
+  return API_HOST + `/user/online/${userId}`;
 };
 
 export const GET_USER_MESSAGE = userId => {
-  return API_HOST + `/user/message?id=${userId}`;
+  return API_HOST + `/user/message/${userId}`;
 };
 
-export const POST_DEL_USER_MESSAGE = () => {
-  return API_HOST + "/user/message/del";
+export const POST_DELETE_USER_MESSAGE = () => {
+  return API_HOST + "/user/message/delete";
 };
 
 export const POST_USER_ONLINE = () => {
@@ -169,11 +169,11 @@ export const POST_USER_ONLINE = () => {
 };
 
 export const GET_UESR_MESSAGE = userId => {
-  return API_HOST + `/user/message?id=${userId}`;
+  return API_HOST + `/user/message/${userId}`;
 };
 
 export const GET_PROJECT_ONLINE_MEMBERS = projectId => {
-  return API_HOST + `/project/member/online?id=${projectId}`;
+  return API_HOST + `/project/member/online/${projectId}`;
 };
 
 export const POST_SEARCH_WAREHOUSE_ITEM_BY_FIELD = () => {
